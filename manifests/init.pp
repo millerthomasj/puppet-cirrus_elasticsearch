@@ -1,4 +1,5 @@
-class twc_elasticsearch::common (
+class twc_elasticsearch (
+  $es_name = 'es_master',
   $es_package_url = 'https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.3.2.deb',
   $es_clustername = 'elk-cluster',
   $es_master0 = '10.10.0.100',
@@ -12,6 +13,8 @@ class twc_elasticsearch::common (
   $es_max_local_storage_nodes = '1',
   $es_destructive_requires_name = true,
   $es_mlockall = true
+  $es_node_master = true,
+  $es_node_data = false,
 )
 {
   class { 'elasticsearch':
@@ -29,6 +32,12 @@ class twc_elasticsearch::common (
                 'node.max_local_storage_nodes'       => $es_max_local_storage_nodes,
                 'action.destructive_requires_name'   => $es_destructive_requires_name,
                 'bootstrap.mlockall'                 => $es_mlockall,
+    }
+  }
+
+  elasticsearch::instance { $es_name:
+    config => { 'node.master' => $es_node_master,
+                'node.data'   => $es_node_data,
     }
   }
 }
