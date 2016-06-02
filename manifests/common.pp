@@ -1,4 +1,4 @@
-class twc-elasticsearch::common (
+class twc_elasticsearch::common (
   $es_package_url = 'https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.3.2.deb',
   $es_clustername = 'elk-cluster',
   $es_master0 = '10.10.0.100',

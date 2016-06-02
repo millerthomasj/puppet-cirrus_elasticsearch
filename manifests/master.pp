@@ -1,9 +1,9 @@
-class twc-elasticsearch::master (
+class twc_elasticsearch::master (
   $es_node_master = true,
   $es_node_data = false,
 )
 {
-  include twc-elasticsearch::common
+  include twc_elasticsearch::common
 
   elasticsearch::instance { 'es_master':
     config => { 'node.master' => $es_node_master,

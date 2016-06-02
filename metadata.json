@@ -1,5 +1,5 @@
 {
-  "name": "twc-elasticsearch",
+  "name": "twc_elasticsearch",
   "version": "0.1.0",
   "author": "Tom Miller",
   "summary": "create an elasticsearch cluster based on hostname.",
