@@ -29,5 +29,5 @@ class twc-elasticsearch::common (
                 'node.max_local_storage_nodes'       => $es_max_local_storage_nodes,
                 'action.destructive_requires_name'   => $es_destructive_requires_name,
                 'bootstrap.mlockall'                 => $es_mlockall,
-  },
+  }
 }
