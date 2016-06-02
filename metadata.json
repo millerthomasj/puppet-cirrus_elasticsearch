@@ -1,0 +1,14 @@
+{
+  "name": "twc-elasticsearch",
+  "version": "0.1.0",
+  "author": "Tom Miller",
+  "summary": "create an elasticsearch cluster based on hostname.",
+  "license": "Apache 2.0",
+  "source": "https://bfd-github.os.cloud.twc.net/tmiller/twc-elasticsearch.git",
+  "project_page": "https://bfd-github.os.cloud.twc.net/tmiller/twc-elasticsearch",
+  "issues_url": "https://bfd-github.os.cloud.twc.net/tmiller/twc-elasticsearch/issues",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+  ]
+}
+
