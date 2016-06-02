@@ -9,4 +9,5 @@ class twc-elasticsearch::client (
     config => { 'node.master' => $es_node_master,
                 'node.data'   => $es_node_data,
     }
+  }
 }
