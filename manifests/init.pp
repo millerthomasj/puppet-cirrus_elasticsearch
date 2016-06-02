@@ -12,7 +12,7 @@ class twc_elasticsearch (
   $es_number_of_shards = '10',
   $es_max_local_storage_nodes = '1',
   $es_destructive_requires_name = true,
-  $es_mlockall = true
+  $es_mlockall = true,
   $es_node_master = false,
   $es_node_data = false,
 )
