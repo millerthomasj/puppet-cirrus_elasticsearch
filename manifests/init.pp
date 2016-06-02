@@ -1,5 +1,5 @@
 class twc_elasticsearch (
-  $es_name = 'es_master',
+  $es_name = 'undef',
   $es_package_url = 'https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.3.2.deb',
   $es_clustername = 'elk-cluster',
   $es_master0 = '10.10.0.100',
@@ -13,7 +13,7 @@ class twc_elasticsearch (
   $es_max_local_storage_nodes = '1',
   $es_destructive_requires_name = true,
   $es_mlockall = true
-  $es_node_master = true,
+  $es_node_master = false,
   $es_node_data = false,
 )
 {
