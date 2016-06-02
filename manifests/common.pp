@@ -17,7 +17,7 @@ class twc_elasticsearch::common (
   class { 'elasticsearch':
     ensure           => 'present',
     package_url      => $es_package_url,
-    java_install     => true,
+    java_install     => false,
     config => { 'cluster.name'                       => $es_clustername,
                 'discovery.zen.minimum_master_nodes' => $es_zen_minimum_master_nodes,
                 'discovery.zen.multicast.enabled'    => $es_zen_multicast_enabled,
