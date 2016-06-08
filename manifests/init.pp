@@ -1,10 +1,10 @@
 class twc_elasticsearch (
   $es_name = 'undef',
   $es_package_url = 'https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.3.2.deb',
-  $es_clustername = 'myElkCluster'
-  $es_master0 = '10.10.0.100'
-  $es_master1 = '10.10.0.101'
-  $es_master2 = '10.10.0.102'
+  $es_clustername = 'myElkCluster',
+  $es_master0 = '10.10.0.100',
+  $es_master1 = '10.10.0.101',
+  $es_master2 = '10.10.0.102',
   $es_zen_minimum_master_nodes = '2',
   $es_zen_multicast_enabled = false,
   $es_recover_after_nodes = '2',
