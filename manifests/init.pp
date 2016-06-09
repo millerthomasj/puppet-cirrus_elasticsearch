@@ -13,6 +13,7 @@ class cirrus_elasticsearch (
   $es_max_local_storage_nodes = '1',
   $es_destructive_requires_name = true,
   $es_mlockall = true,
+  $es_mapper_dynamic = true,
   $es_node_master = false,
   $es_node_data = false,
 )
@@ -26,6 +27,7 @@ class cirrus_elasticsearch (
                 'discovery.zen.multicast.enabled'    => $es_zen_multicast_enabled,
                 'discovery.zen.ping.unicast.hosts'   => [ $es_master0, $es_master1, $es_master2 ],
                 'gateway.recover_after_nodes'        => $es_recover_after_nodes,
+                'index.mapper.dynamic'               => $es_mapper_dynamic,
                 'index.number_of_replicas'           => $es_number_of_replicas,
                 'index.number_of_shards'             => $es_number_of_shards,
                 'network.host'                       => $::ipaddress,
