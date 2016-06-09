@@ -1,6 +1,6 @@
 class twc_elasticsearch (
   $es_name = 'undef',
-  $es_package_url = 'https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.3.2.deb',
+  $es_package_url = 'https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.3.3/elasticsearch-2.3.3.deb',
   $es_clustername = 'myElkCluster',
   $es_master0 = '10.10.0.100',
   $es_master1 = '10.10.0.101',
