@@ -1,6 +1,6 @@
 {
-  "name": "twc_elasticsearch",
-  "version": "0.1.0",
+  "name": "cirrus_elasticsearch",
+  "version": "1.0.1",
   "author": "Tom Miller",
   "summary": "create an elasticsearch cluster based on hostname.",
   "license": "Apache 2.0",

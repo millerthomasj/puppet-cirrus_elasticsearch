@@ -1,4 +1,4 @@
-class cirrus_elasticsearch (
+class twc_elasticsearch (
   $es_name = 'undef',
   $es_package_url = 'https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.3.3/elasticsearch-2.3.3.deb',
   $es_clustername = 'myElkCluster',
