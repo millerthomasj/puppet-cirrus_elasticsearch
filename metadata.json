@@ -1,6 +1,6 @@
 {
   "name": "cirrus_elasticsearch",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Tom Miller",
   "summary": "create an elasticsearch cluster based on hostname.",
   "license": "Apache 2.0",
@@ -8,7 +8,13 @@
   "project_page": "https://bfd-github.os.cloud.twc.net/tmiller/twc-elasticsearch",
   "issues_url": "https://bfd-github.os.cloud.twc.net/tmiller/twc-elasticsearch/issues",
   "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+    {
+      "name":"puppetlabs-stdlib",
+      "version_requirement":">= 1.0.0"
+    },
+    {
+      "name":"elasticsearch-elasticsearch",
+      "version_requirement":">= 0.11.0"
+    },
   ]
 }
-
