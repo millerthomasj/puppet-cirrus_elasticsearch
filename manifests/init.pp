@@ -17,27 +17,28 @@ class cirrus_elasticsearch (
   $es_node_data = false,
 )
 {
-  class { 'elasticsearch':
-    ensure           => 'present',
-    package_url      => $es_package_url,
-    java_install     => true,
-    config => { 'cluster.name'                       => $es_clustername,
-                'discovery.zen.minimum_master_nodes' => $es_zen_minimum_master_nodes,
-                'discovery.zen.multicast.enabled'    => $es_zen_multicast_enabled,
-                'discovery.zen.ping.unicast.hosts'   => [ $es_master0, $es_master1, $es_master2 ],
-                'gateway.recover_after_nodes'        => $es_recover_after_nodes,
-                'index.number_of_replicas'           => $es_number_of_replicas,
-                'index.number_of_shards'             => $es_number_of_shards,
-                'network.host'                       => $::ipaddress,
-                'node.max_local_storage_nodes'       => $es_max_local_storage_nodes,
-                'action.destructive_requires_name'   => $es_destructive_requires_name,
-                'bootstrap.mlockall'                 => $es_mlockall,
+  class { '::elasticsearch':
+    ensure       => 'present',
+    package_url  => $es_package_url,
+    java_install => true,
+    config       => { 'cluster.name'                       => $es_clustername,
+                      'discovery.zen.minimum_master_nodes' => $es_zen_minimum_master_nodes,
+                      'discovery.zen.multicast.enabled'    => $es_zen_multicast_enabled,
+                      'discovery.zen.ping.unicast.hosts'   => [ $es_master0, $es_master1, $es_master2 ],
+                      'gateway.recover_after_nodes'        => $es_recover_after_nodes,
+                      'index.number_of_replicas'           => $es_number_of_replicas,
+                      'index.number_of_shards'             => $es_number_of_shards,
+                      'network.host'                       => $::ipaddress,
+                      'node.max_local_storage_nodes'       => $es_max_local_storage_nodes,
+                      'action.destructive_requires_name'   => $es_destructive_requires_name,
+                      'bootstrap.mlockall'                 => $es_mlockall,
     }
   }
 
   elasticsearch::instance { $es_name:
-    config => { 'node.master' => $es_node_master,
-                'node.data'   => $es_node_data,
+    config => {
+      'node.master' => $es_node_master,
+      'node.data'   => $es_node_data,
     }
   }
 }
