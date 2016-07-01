@@ -28,7 +28,7 @@ class cirrus_elasticsearch (
                       'gateway.recover_after_nodes'        => $es_recover_after_nodes,
                       'index.number_of_replicas'           => $es_number_of_replicas,
                       'index.number_of_shards'             => $es_number_of_shards,
-                      'network.host'                       => $::ipaddress,
+                      'network.host'                       => '0.0.0.0',
                       'node.max_local_storage_nodes'       => $es_max_local_storage_nodes,
                       'action.destructive_requires_name'   => $es_destructive_requires_name,
                       'bootstrap.mlockall'                 => $es_mlockall,
