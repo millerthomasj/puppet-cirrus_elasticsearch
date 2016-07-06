@@ -14,7 +14,6 @@ module EsHealth
     dir_prefix = '/etc/elasticsearch'
     ports = []
 
-    # only when the directory exists we need to process the stuff
     if File.directory?(dir_prefix)
       Dir.foreach(dir_prefix) { |dir|
         next if dir == '.'
