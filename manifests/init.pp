@@ -108,6 +108,6 @@ class cirrus_elasticsearch (
   }
 
   elasticsearch::template { 'set_index_shards':
-    content => "{ \"template\":\"*\",\"settings\":{\"number_of_shards\": $num_shards}}" # lint:ignore:variables_not_enclosed
+    content => "{ \"template\":\"*\",\"order\",\"1\",\"settings\":{\"number_of_shards\": $num_shards}}" # lint:ignore:variables_not_enclosed
   }
 }
