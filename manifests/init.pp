@@ -107,7 +107,9 @@ class cirrus_elasticsearch (
     $num_shards = $es_number_of_shards
   }
 
-  elasticsearch::template { 'set_index_shards':
-    content => "{ \"template\":\"*\",\"order\",\"1\",\"settings\":{\"number_of_shards\": $num_shards}}" # lint:ignore:variables_not_enclosed
+  if $::elasticsearch_9200_cluster_status == 'green' {
+    elasticsearch::template { 'set_index_shards':
+      content => "{ \"template\":\"*\",\"order\":1,\"settings\":{\"number_of_shards\": $num_shards}}" # lint:ignore:variables_not_enclosed
+    }
   }
 }
