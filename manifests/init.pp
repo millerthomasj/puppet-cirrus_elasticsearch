@@ -93,10 +93,26 @@ class cirrus_elasticsearch (
     }
   }
 
-  elasticsearch::instance { $es_name:
-    config => {
-      'node.master' => $es_node_master,
-      'node.data'   => $es_node_data,
+  $es_datadir = $::localmounts.split(',').delete('/')
+
+  # The following is needed to pass catalog tests during the transition to new data paths
+  # once this is done it will be replaced with this line:
+  # if $es_data_node {
+  if '/usr/share/elasticsearch/data0' in $es_datadir {
+    elasticsearch::instance { $es_name:
+      datadir => $es_datadir,
+      config  => {
+        'node.master' => $es_node_master,
+        'node.data'   => $es_node_data,
+      }
+    }
+  }
+  else {
+    elasticsearch::instance { $es_name:
+      config => {
+        'node.master' => $es_node_master,
+        'node.data'   => $es_node_data,
+      }
     }
   }
 
