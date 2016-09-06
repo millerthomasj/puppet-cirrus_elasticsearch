@@ -93,15 +93,29 @@ class cirrus_elasticsearch (
     }
   }
 
-  $es_datadir = $::localmounts.split(',').delete('/')
+  if $es_node_data {
+    $es_blockdevs = $::blockdevices.split(',').delete('sr0').delete('vda')
+    $es_datadirs = $es_blockdevs.map |$index, $device| { "/usr/share/elasticsearch/data${index}" }
 
-  # The following is needed to pass catalog tests during the transition to new data paths
-  # once this is done it will be replaced with this line:
-  # if $es_data_node {
-  if '/usr/share/elasticsearch/data0' in $es_datadir {
+    class { '::cirrus_elasticsearch::mount':
+      blockdevs     => $es_blockdevs,
+      instance_name => $es_name,
+    }
+
+    $heap = 0 + inline_template('<%= @memorysize_mb.to_i / 2000 %>')
+    if $heap >= 30 {
+      $set_heap = '31'
+    }
+    else {
+      $set_heap = $heap
+    }
+
     elasticsearch::instance { $es_name:
-      datadir => $es_datadir,
-      config  => {
+      init_defaults => {
+        'ES_HEAP_SIZE' => "${set_heap}g",
+      },
+      datadir       => $es_datadirs,
+      config        => {
         'node.master' => $es_node_master,
         'node.data'   => $es_node_data,
       }
