@@ -55,6 +55,24 @@ module EsHealth
 
             add_fact(key_prefix, 'cluster_status', json_data_node['status'])
             add_fact(key_prefix, 'num_data_nodes', json_data_node['number_of_data_nodes'])
+
+            uri3 = URI("http://localhost:#{port}/_nodes/#{json_data['name']}")
+            http3 = Net::HTTP.new(uri3.host, uri3.port)
+            http3.read_timeout = 10
+            response3 = http3.get(uri3.path)
+            json_data_localnode = JSON.parse(response3.body)
+
+            uri4 = URI("http://localhost:#{port}/_cluster/state/master_node")
+            http4 = Net::HTTP::new(uri4.host, uri4.port)
+            http4.read_timeout = 10
+            response4 = http4.get(uri4.path)
+            json_data_masternode = JSON.parse(response4.body)
+
+            if json_data_localnode['nodes'].first[0] == json_data_masternode['master_node']
+              add_fact(key_prefix, 'master_node', 'true')
+            else
+              add_fact(key_prefix, 'master_node', 'false')
+            end
           end
         end
       rescue
