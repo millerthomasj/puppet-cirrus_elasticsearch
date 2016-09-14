@@ -1,3 +1,8 @@
+# Class cirrus_elasticsearch::params
+#
+# Default configuration for cirrus_elasticsearch module
+#
+
 class cirrus_elasticsearch::params
 {
   $es_name = 'undef'

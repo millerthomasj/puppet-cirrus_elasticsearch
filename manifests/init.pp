@@ -130,18 +130,7 @@ class cirrus_elasticsearch (
     }
   }
 
-  if $::elasticsearch_9200_num_data_nodes {
-    $num_shards = $::elasticsearch_9200_num_data_nodes * 2
-  }
-  else {
-    $num_shards = $es_number_of_shards
-  }
-
   if $::elasticsearch_9200_cluster_status == 'green' {
-    elasticsearch::template { 'set_index_shards':
-      content => "{ \"template\":\"*\",\"order\":1,\"settings\":{\"number_of_shards\": $num_shards}}" # lint:ignore:variables_not_enclosed
-    }
-
     include ::cirrus_elasticsearch::config
   }
 }

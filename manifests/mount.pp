@@ -1,3 +1,8 @@
+# Class cirrus_elasticsearch::mount
+#
+# Properly mount as many mountpoints as needed.
+#
+
 class cirrus_elasticsearch::mount (
   $blockdevs,
   $instance_name
