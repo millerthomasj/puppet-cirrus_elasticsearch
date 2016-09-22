@@ -26,4 +26,7 @@ class cirrus_elasticsearch::params
   $es_mlockall = true
 
   $es_destructive_requires_name = true
+
+  $es_import_dir = '/usr/share/elasticsearch/importJSON'
+  $es_swift_backups = false
 }

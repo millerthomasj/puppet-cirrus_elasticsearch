@@ -55,22 +55,23 @@
 #
 
 class cirrus_elasticsearch (
-  $es_name = $cirrus_elasticsearch::params::es_name,
-  $es_master0 = $cirrus_elasticsearch::params::es_master0,
-  $es_master1 = $cirrus_elasticsearch::params::es_master1,
-  $es_master2 = $cirrus_elasticsearch::params::es_master2,
-  $es_node_master = $cirrus_elasticsearch::params::es_node_master,
-  $es_node_data = $cirrus_elasticsearch::params::es_node_data,
-  $es_manage_repo = $cirrus_elasticsearch::params::es_manage_repo,
-  $es_clustername = $cirrus_elasticsearch::params::es_clustername,
-  $es_recover_after_nodes = $cirrus_elasticsearch::params::es_recover_after_nodes,
-  $es_zen_minimum_master_nodes = $cirrus_elasticsearch::params::es_zen_minimum_master_nodes,
-  $es_zen_multicast_enabled = $cirrus_elasticsearch::params::es_zen_multicast_enabled,
-  $es_number_of_replicas = $cirrus_elasticsearch::params::es_number_of_replicas,
-  $es_number_of_shards = $cirrus_elasticsearch::params::es_number_of_shards,
-  $es_max_local_storage_nodes = $cirrus_elasticsearch::params::es_max_local_storage_nodes,
-  $es_mlockall = $cirrus_elasticsearch::params::es_mlockall,
-  $es_destructive_requires_name = $cirrus_elasticsearch::params::es_destructive_requires_name,
+  $es_name                        = $cirrus_elasticsearch::params::es_name,
+  $es_master0                     = $cirrus_elasticsearch::params::es_master0,
+  $es_master1                     = $cirrus_elasticsearch::params::es_master1,
+  $es_master2                     = $cirrus_elasticsearch::params::es_master2,
+  $es_node_master                 = $cirrus_elasticsearch::params::es_node_master,
+  $es_node_data                   = $cirrus_elasticsearch::params::es_node_data,
+  $es_manage_repo                 = $cirrus_elasticsearch::params::es_manage_repo,
+  $es_clustername                 = $cirrus_elasticsearch::params::es_clustername,
+  $es_recover_after_nodes         = $cirrus_elasticsearch::params::es_recover_after_nodes,
+  $es_zen_minimum_master_nodes    = $cirrus_elasticsearch::params::es_zen_minimum_master_nodes,
+  $es_zen_multicast_enabled       = $cirrus_elasticsearch::params::es_zen_multicast_enabled,
+  $es_number_of_replicas          = $cirrus_elasticsearch::params::es_number_of_replicas,
+  $es_number_of_shards            = $cirrus_elasticsearch::params::es_number_of_shards,
+  $es_max_local_storage_nodes     = $cirrus_elasticsearch::params::es_max_local_storage_nodes,
+  $es_mlockall                    = $cirrus_elasticsearch::params::es_mlockall,
+  $es_destructive_requires_name   = $cirrus_elasticsearch::params::es_destructive_requires_name,
+  $es_swift_backups               = $cirrus_elasticsearch::params::es_swift_backups,
 ) inherits cirrus_elasticsearch::params
 {
   include ::cirrus::repo::elasticsearch
@@ -134,13 +135,20 @@ class cirrus_elasticsearch (
     }
   }
 
-#  elasticsearch::plugin { 'org.wikimedia.elasticsearch.swift/swift-repository-plugin/2.3.3.1':
-#    ensure     => 'present',
-#    instances  => $es_name,
-#    module_dir => 'swift-repository',
-#  }
-
   if $::elasticsearch_9200_cluster_status == 'green' {
     include ::cirrus_elasticsearch::config
+
+    elasticsearch::plugin { 'org.wikimedia.elasticsearch.swift/swift-repository-plugin/2.3.3.1':
+      ensure     => 'present',
+      instances  => $es_name,
+      module_dir => 'swift-repository',
+    }
+
+    if $es_swift_backups {
+      # Configure the swift repository plugin
+      if 'swift-repository' in $::elasticsearch_9200_plugins {
+        include ::cirrus_elasticsearch::backup
+      }
+    }
   }
 }

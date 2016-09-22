@@ -23,6 +23,7 @@ class cirrus_elasticsearch::config (
 
   # Do the following only on es-master nodes for Elasticsearch index management
   if ( $es_node_master == true ) {
+    # Install and configure curator
     include ::cirrus::repo::curator
     class { '::cirrus_curator':
       ensure      => 'latest',

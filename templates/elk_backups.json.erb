@@ -1,0 +1,11 @@
+{
+  "type": "swift",
+  "settings": {
+    "swift_url": "<%= scope.lookupvar('::cirrus_elasticsearch::backup::es_swift_url') %>",
+    "swift_container": "<%= scope.lookupvar('::cirrus_elasticsearch::backup::es_swift_container') %>",
+    "swift_authmethod": "<%= scope.lookupvar('::cirrus_elasticsearch::backup::es_swift_authmethod') %>",
+    "swift_tenantname": "<%= scope.lookupvar('::cirrus_elasticsearch::backup::es_swift_tenantname') %>",
+    "swift_username": "<%= scope.lookupvar('::cirrus_elasticsearch::backup::es_swift_username') %>",
+    "swift_password": "<%= scope.lookupvar('::cirrus_elasticsearch::backup::es_swift_password') %>"
+  }
+}
