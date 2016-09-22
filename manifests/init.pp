@@ -113,6 +113,7 @@ class cirrus_elasticsearch (
     elasticsearch::instance { $es_name:
       init_defaults => {
         'ES_HEAP_SIZE' => "${set_heap}g",
+        'DATA_DIR'     => '/usr/share/elasticsearch/data',
       },
       datadir       => $es_datadirs,
       config        => {
@@ -123,12 +124,21 @@ class cirrus_elasticsearch (
   }
   else {
     elasticsearch::instance { $es_name:
-      config => {
+      init_defaults => {
+        'DATA_DIR' => '/usr/share/elasticsearch/data',
+      },
+      config        => {
         'node.master' => $es_node_master,
         'node.data'   => $es_node_data,
       }
     }
   }
+
+#  elasticsearch::plugin { 'org.wikimedia.elasticsearch.swift/swift-repository-plugin/2.3.3.1':
+#    ensure     => 'present',
+#    instances  => $es_name,
+#    module_dir => 'swift-repository',
+#  }
 
   if $::elasticsearch_9200_cluster_status == 'green' {
     include ::cirrus_elasticsearch::config
