@@ -76,17 +76,30 @@ define cirrus_elasticsearch::settings (
   # Build up the url
   $es_url = "${protocol}://${host}:${port}/_snapshot/${name}"
 
+  if ($ensure == 'present') {
+    if $content == undef {
+      fail('The variable "content" cannot be empty.')
+    } else {
+      $insert_notify = Exec["insert_${name}"]
+    }
+  } else {
+    $insert_notify = undef
+  }
+
   # Delete the existing item
   exec { "delete_${name}":
-    command => "curl ${ssl_args} -s -XDELETE ${es_url}",
-    onlyif  => "test $(curl ${ssl_args} -s '${es_url}?pretty=true' | grep -c '\"found\" : true') -eq 1",
+    command     => "curl ${ssl_args} -s -XDELETE ${es_url}",
+    onlyif      => "test $(curl ${ssl_args} -s '${es_url}?pretty=true' | grep -c ${name}) -gt 1",
+    notify      => $insert_notify,
+    refreshonly => true,
   }
 
   if ($ensure == 'absent') {
     # delete the template file on disk and then on the server
     file { "${import_dir}/${name}.json":
-      ensure => 'absent',
-      notify => Exec[ "delete_${name}" ],
+      ensure  => 'absent',
+      notify  => Exec[ "delete_${name}" ],
+      require => File[$import_dir],
     }
   }
 
@@ -95,12 +108,14 @@ define cirrus_elasticsearch::settings (
     file { "${import_dir}/${name}.json":
       ensure  => file,
       content => template("${module_name}/${content}"),
+      notify  => Exec[ "delete_${name}" ],
+      require => File[$import_dir],
     }
 
     exec { "insert_${name}":
-      command => "curl ${ssl_args} -sL -w \"%{http_code}\\n\" -XPUT ${es_url} -d @${import_dir}/${name}.json -o /dev/null | egrep \"(200|201)\" > /dev/null",
+      command     => "curl ${ssl_args} -sL -w \"%{http_code}\\n\" -XPUT ${es_url} -d @${import_dir}/${name}.json -o /dev/null | egrep \"(200|201)\" > /dev/null",
+      refreshonly => true,
+      loglevel    => 'debug',
     }
   }
-
-  File["${import_dir}/${name}.json"] -> Exec["delete_${name}"] -> Exec["insert_${name}"]
 }
