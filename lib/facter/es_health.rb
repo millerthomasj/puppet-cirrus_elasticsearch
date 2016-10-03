@@ -47,15 +47,6 @@ module EsHealth
             json_data = JSON.parse(response.body)
             next if json_data['status'] && json_data['status'] != 200
 
-            uri2 = URI("http://localhost:#{port}/_cluster/health")
-            http2 = Net::HTTP.new(uri2.host, uri2.port)
-            http2.read_timeout = 10
-            response2 = http2.get(uri2.path)
-            json_data_node = JSON.parse(response2.body)
-
-            add_fact(key_prefix, 'cluster_status', json_data_node['status'])
-            add_fact(key_prefix, 'num_data_nodes', json_data_node['number_of_data_nodes'])
-
             uri3 = URI("http://localhost:#{port}/_nodes/#{json_data['name']}")
             http3 = Net::HTTP.new(uri3.host, uri3.port)
             http3.read_timeout = 10

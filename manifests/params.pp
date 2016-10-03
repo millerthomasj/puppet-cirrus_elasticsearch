@@ -29,4 +29,7 @@ class cirrus_elasticsearch::params
 
   $es_import_dir = '/usr/share/elasticsearch/importJSON'
   $es_swift_backups = false
+
+  $shield_auth_username = 'puppet'
+  $shield_auth_password = '78()uiOP'
 }

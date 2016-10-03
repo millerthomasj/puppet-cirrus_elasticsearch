@@ -72,26 +72,61 @@ class cirrus_elasticsearch (
   $es_mlockall                    = $cirrus_elasticsearch::params::es_mlockall,
   $es_destructive_requires_name   = $cirrus_elasticsearch::params::es_destructive_requires_name,
   $es_swift_backups               = $cirrus_elasticsearch::params::es_swift_backups,
+  $xpack_install                  = false,
+  $shield_auth_username           = $cirrus_elasticsearch::params::shield_auth_username,
+  $shield_auth_password           = $cirrus_elasticsearch::params::shield_auth_password,
 ) inherits cirrus_elasticsearch::params
 {
   include ::cirrus::repo::elasticsearch
 
-  class { '::elasticsearch':
-    ensure       => 'present',
-    manage_repo  => $es_manage_repo,
-    java_install => true,
-    config       => { 'cluster.name'                       => $es_clustername,
-                      'discovery.zen.minimum_master_nodes' => $es_zen_minimum_master_nodes,
-                      'discovery.zen.multicast.enabled'    => $es_zen_multicast_enabled,
-                      'discovery.zen.ping.unicast.hosts'   => [ $es_master0, $es_master1, $es_master2 ],
-                      'gateway.recover_after_nodes'        => $es_recover_after_nodes,
-                      'index.number_of_replicas'           => $es_number_of_replicas,
-                      'index.number_of_shards'             => $es_number_of_shards,
-                      'network.host'                       => '0.0.0.0',
-                      'node.max_local_storage_nodes'       => $es_max_local_storage_nodes,
-                      'action.destructive_requires_name'   => $es_destructive_requires_name,
-                      'bootstrap.mlockall'                 => $es_mlockall,
+  if $xpack_install {
+    $_auth_username = $shield_auth_username
+    $_auth_password = $shield_auth_password
+    $_config = {
+      'node.master'                                           => $es_node_master,
+      'node.data'                                             => $es_node_data,
+      'shield.audit.enabled'                                  => true,
+      'shield.authc.anonymous.username'                       => 'anonymous',
+      'shield.authc.anonymous.roles'                          => [ 'admin', 'anonymous' ],
+      'shield.authc.realms.esusers.type'                      => 'esusers',
+      'shield.authc.realms.esusers.order'                     => '0',
+      'shield.authc.realms.twc_ldap.type'                     => 'ldap',
+      'shield.authc.realms.twc_ldap.order'                    => '1',
+      'shield.authc.realms.twc_ldap.url'                      => hiera('keystone::ldap::url'),
+      'shield.authc.realms.twc_ldap.bind_dn'                  => 'svc-openstack@@corp.twcable.com',
+      'shield.authc.realms.twc_ldap.bind_password'            => hiera('keystone::ldap::password'),
+      'shield.authc.realms.twc_ldap.user_search.base_dn'      => hiera('keystone::ldap::user_tree_dn'),
+      'shield.authc.realms.twc_ldap.user_search.attribute'    => hiera('keystone::ldap::user_id_attribute'),
+      'shield.authc.realms.twc_ldap.unmapped_groups_as_roles' => true,
     }
+  } else {
+    $_auth_username = undef
+    $_auth_password = undef
+    $_config = {
+      'node.master'                       => $es_node_master,
+      'node.data'                         => $es_node_data,
+    }
+  }
+
+  class { '::elasticsearch':
+    ensure                  => 'present',
+    manage_repo             => $es_manage_repo,
+    java_install            => true,
+    api_basic_auth_username => $_auth_username,
+    api_basic_auth_password => $_auth_password,
+    config                  => {
+      'cluster.name'                       => $es_clustername,
+      'discovery.zen.minimum_master_nodes' => $es_zen_minimum_master_nodes,
+      'discovery.zen.multicast.enabled'    => $es_zen_multicast_enabled,
+      'discovery.zen.ping.unicast.hosts'   => [ $es_master0, $es_master1, $es_master2 ],
+      'gateway.recover_after_nodes'        => $es_recover_after_nodes,
+      'index.number_of_replicas'           => $es_number_of_replicas,
+      'index.number_of_shards'             => $es_number_of_shards,
+      'network.host'                       => '0.0.0.0',
+      'node.max_local_storage_nodes'       => $es_max_local_storage_nodes,
+      'action.destructive_requires_name'   => $es_destructive_requires_name,
+      'bootstrap.mlockall'                 => $es_mlockall,
+    },
   }
 
   if $es_node_data {
@@ -117,10 +152,7 @@ class cirrus_elasticsearch (
         'DATA_DIR'     => '/usr/share/elasticsearch/data',
       },
       datadir       => $es_datadirs,
-      config        => {
-        'node.master' => $es_node_master,
-        'node.data'   => $es_node_data,
-      }
+      config        => $_config,
     }
   }
   else {
@@ -128,24 +160,30 @@ class cirrus_elasticsearch (
       init_defaults => {
         'DATA_DIR' => '/usr/share/elasticsearch/data',
       },
-      config        => {
-        'node.master' => $es_node_master,
-        'node.data'   => $es_node_data,
-      }
+      config        => $_config,
     }
   }
 
-  if $::elasticsearch_9200_cluster_status == 'green' {
-    include ::cirrus_elasticsearch::config
+  es_instance_conn_validator { $es_name: }
 
-    elasticsearch::plugin { 'org.wikimedia.elasticsearch.swift/swift-repository-plugin/2.3.3.1':
-      ensure     => 'present',
-      instances  => $es_name,
-      module_dir => 'swift-repository',
+  include ::cirrus_elasticsearch::config
+
+  if $xpack_install {
+    class { '::cirrus_elasticsearch::xpack':
+      es_name => $es_name,
     }
+  }
 
-    if $es_swift_backups {
-      # Configure the swift repository plugin
+  elasticsearch::plugin { 'org.wikimedia.elasticsearch.swift/swift-repository-plugin/2.3.3.1':
+    ensure     => 'present',
+    instances  => $es_name,
+    module_dir => 'swift-repository',
+    require    => Es_Instance_Conn_Validator[$es_name],
+  }
+
+  if $es_swift_backups {
+    # Configure the swift repository plugin
+    if $::elasticsearch_9200_plugins {
       if 'swift-repository' in $::elasticsearch_9200_plugins {
         include ::cirrus_elasticsearch::backup
       }
