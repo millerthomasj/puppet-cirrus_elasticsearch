@@ -44,7 +44,7 @@ define cirrus_elasticsearch::settings (
   $host       = 'localhost',
   $port       = 9200,
   $protocol   = 'http',
-  $ssl_args   = undef,
+  $curl_args   = undef,
   $import_dir = $::cirrus_elasticsearch::params::es_import_dir,
 )
 {
@@ -88,8 +88,8 @@ define cirrus_elasticsearch::settings (
 
   # Delete the existing item
   exec { "delete_${name}":
-    command     => "curl ${ssl_args} -s -XDELETE ${es_url}",
-    onlyif      => "test $(curl ${ssl_args} -s '${es_url}?pretty=true' | grep -c ${name}) -gt 1",
+    command     => "curl ${curl_args} -s -XDELETE ${es_url}",
+    onlyif      => "test $(curl ${curl_args} -s '${es_url}?pretty=true' | grep -c ${name}) -gt 1",
     notify      => $insert_notify,
     refreshonly => true,
   }
@@ -113,7 +113,7 @@ define cirrus_elasticsearch::settings (
     }
 
     exec { "insert_${name}":
-      command     => "curl ${ssl_args} -sL -w \"%{http_code}\\n\" -XPUT ${es_url} -d @${import_dir}/${name}.json -o /dev/null | egrep \"(200|201)\" > /dev/null",
+      command     => "curl ${curl_args} -sL -w \"%{http_code}\\n\" -XPUT ${es_url} -d @${import_dir}/${name}.json -o /dev/null | egrep \"(200|201)\" > /dev/null",
       refreshonly => true,
       loglevel    => 'debug',
     }

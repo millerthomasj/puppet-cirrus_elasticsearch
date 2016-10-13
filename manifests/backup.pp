@@ -34,7 +34,15 @@ class cirrus_elasticsearch::backup (
   $es_node_master        = $cirrus_elasticsearch::es_node_master,
 )
 {
-  if ( $es_node_master == true ) {
+  if ($es_node_master == true) and ($::cirrus_elasticsearch::xpack_install) {
+    $elastic_username = 'admin'
+    $elastic_password = $::cirrus_elasticsearch::xpack::users::admin_password
+
+    cirrus_elasticsearch::settings { 'elk_backups':
+      curl_args => "-u '${elastic_username}':'${elastic_password}'",
+      content   => 'elk_backups.json.erb',
+    }
+  } elsif ($es_node_master == true) {
     cirrus_elasticsearch::settings { 'elk_backups':
       content => 'elk_backups.json.erb',
     }
