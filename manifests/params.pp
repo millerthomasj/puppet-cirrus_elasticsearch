@@ -15,6 +15,8 @@ class cirrus_elasticsearch::params
 
   $es_manage_repo = false
 
+  $es_enable_ssl = false
+
   $es_clustername = 'myElkCluster'
   $es_recover_after_nodes = '2'
   $es_zen_minimum_master_nodes = '2'
@@ -30,6 +32,6 @@ class cirrus_elasticsearch::params
   $es_import_dir = '/usr/share/elasticsearch/importJSON'
   $es_swift_backups = false
 
-  $shield_auth_username = 'puppet'
-  $shield_auth_password = '78()uiOP'
+  $shield_auth_username = 'admin'
+  $shield_auth_password = 'changeme!'
 }

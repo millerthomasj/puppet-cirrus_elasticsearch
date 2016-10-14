@@ -4,7 +4,8 @@
 #
 
 class cirrus_elasticsearch::xpack::users (
-  $admin_password    = 'mypass',
+  $admin_username    = $::cirrus_elasticsearch::shield_auth_username,
+  $admin_password    = $::cirrus_elasticsearch::shield_auth_password,
   $logstash_username = 'logstash',
   $logstash_password = 'mypass',
   $kibana_username   = 'kibana',
@@ -16,11 +17,6 @@ class cirrus_elasticsearch::xpack::users (
     password => $admin_password,
     roles    => ['admin'],
   }
-  notify { 'update puppet password': } ~>
-  elasticsearch::shield::user { $::cirrus_elasticsearch::shield_auth_username:
-    password => $::cirrus_elasticsearch::shield_auth_password,
-    roles    => ['admin'],
-  }
   notify { 'update logstash password': } ~>
   elasticsearch::shield::user { $logstash_username:
     password => $logstash_password,
@@ -29,6 +25,6 @@ class cirrus_elasticsearch::xpack::users (
   notify { 'update kibana password': } ~>
   elasticsearch::shield::user { $kibana_username:
     password => $kibana_password,
-    roles    => ['kibana4'],
+    roles    => ['kibana4_server'],
   }
 }

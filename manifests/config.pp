@@ -10,6 +10,8 @@ class cirrus_elasticsearch::config (
   $es_node_master      = $::cirrus_elasticsearch::es_node_master,
 )
 {
+  es_instance_conn_validator { $es_name: }
+
   $num_shards = query_nodes('cirrus_role=es and cirrus_app_instance=data').count()
 
   elasticsearch::template { 'set_index_shards':

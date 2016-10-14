@@ -62,6 +62,7 @@ class cirrus_elasticsearch (
   $es_node_master                 = $cirrus_elasticsearch::params::es_node_master,
   $es_node_data                   = $cirrus_elasticsearch::params::es_node_data,
   $es_manage_repo                 = $cirrus_elasticsearch::params::es_manage_repo,
+  $es_enable_ssl                  = $cirrus_elasticsearch::params::es_enable_ssl,
   $es_clustername                 = $cirrus_elasticsearch::params::es_clustername,
   $es_recover_after_nodes         = $cirrus_elasticsearch::params::es_recover_after_nodes,
   $es_zen_minimum_master_nodes    = $cirrus_elasticsearch::params::es_zen_minimum_master_nodes,
@@ -79,9 +80,24 @@ class cirrus_elasticsearch (
 {
   include ::cirrus::repo::elasticsearch
 
+  if $es_enable_ssl {
+    include ::cirrus_elasticsearch::tls
+
+    $_ca_certificate = '/var/lib/puppet/ssl/certs/ca.pem'
+    $_certificate = "/var/lib/puppet/ssl/certs/${::fqdn}.pem"
+    $_private_key = "/var/lib/puppet/ssl/private_keys/${::fqdn}.pem"
+    $_keystore_password = 'keystorepassword'
+  } else {
+    $_ca_certificate = undef
+    $_certificate = undef
+    $_private_key = undef
+    $_keystore_password = undef
+  }
+
   if $xpack_install {
     $_auth_username = $shield_auth_username
     $_auth_password = $shield_auth_password
+
     $_config = {
       'node.master'                                           => $es_node_master,
       'node.data'                                             => $es_node_data,
@@ -92,12 +108,15 @@ class cirrus_elasticsearch (
       'shield.authc.realms.esusers.order'                     => '0',
       'shield.authc.realms.twc_ldap.type'                     => 'ldap',
       'shield.authc.realms.twc_ldap.order'                    => '1',
-      'shield.authc.realms.twc_ldap.url'                      => hiera('keystone::ldap::url'),
+      'shield.authc.realms.twc_ldap.url'                      => 'ldap://165.237.2.112:3268',
       'shield.authc.realms.twc_ldap.bind_dn'                  => 'svc-openstack@@corp.twcable.com',
       'shield.authc.realms.twc_ldap.bind_password'            => hiera('keystone::ldap::password'),
-      'shield.authc.realms.twc_ldap.user_search.base_dn'      => hiera('keystone::ldap::user_tree_dn'),
-      'shield.authc.realms.twc_ldap.user_search.attribute'    => hiera('keystone::ldap::user_id_attribute'),
+      'shield.authc.realms.twc_ldap.user_dn_templates'        => [
+        'cn={0},OU=Users,OU=Mystro,OU=TWC Divisions,DC=corp,DC=twcable,DC=com',
+        'cn={0},OU=Vendors,OU=Mystro,OU=TWC Divisions,DC=corp,DC=twcable,DC=com',
+      ],
       'shield.authc.realms.twc_ldap.unmapped_groups_as_roles' => true,
+      'shield.authc.realms.twc_ldap.hostname_verification'    => false,
     }
   } else {
     $_auth_username = undef
@@ -146,25 +165,28 @@ class cirrus_elasticsearch (
       $set_heap = $heap
     }
 
-    elasticsearch::instance { $es_name:
-      init_defaults => {
-        'ES_HEAP_SIZE' => "${set_heap}g",
-        'DATA_DIR'     => '/usr/share/elasticsearch/data',
-      },
-      datadir       => $es_datadirs,
-      config        => $_config,
+    $_init_defaults = {
+      'ES_HEAP_SIZE' => "${set_heap}g",
+      'DATA_DIR'     => '/usr/share/elasticsearch/data',
     }
-  }
-  else {
-    elasticsearch::instance { $es_name:
-      init_defaults => {
-        'DATA_DIR' => '/usr/share/elasticsearch/data',
-      },
-      config        => $_config,
+    $_datadir = $es_datadirs
+  } else {
+    $_init_defaults = {
+      'DATA_DIR' => '/usr/share/elasticsearch/data',
     }
+    $_datadir = undef
   }
 
-  es_instance_conn_validator { $es_name: }
+  elasticsearch::instance { $es_name:
+    ssl               => $es_enable_ssl,
+    ca_certificate    => $_ca_certificate,
+    certificate       => $_certificate,
+    private_key       => $_private_key,
+    keystore_password => $_keystore_password,
+    init_defaults     => $_init_defaults,
+    datadir           => $_datadir,
+    config            => $_config,
+  }
 
   include ::cirrus_elasticsearch::config
 
@@ -174,14 +196,13 @@ class cirrus_elasticsearch (
     }
   }
 
-  elasticsearch::plugin { 'org.wikimedia.elasticsearch.swift/swift-repository-plugin/2.3.3.1':
-    ensure     => 'present',
-    instances  => $es_name,
-    module_dir => 'swift-repository',
-    require    => Es_Instance_Conn_Validator[$es_name],
-  }
-
   if $es_swift_backups {
+    elasticsearch::plugin { 'org.wikimedia.elasticsearch.swift/swift-repository-plugin/2.3.3.1':
+      ensure     => 'present',
+      instances  => $es_name,
+      module_dir => 'swift-repository',
+    }
+
     # Configure the swift repository plugin
     if $::elasticsearch_9200_plugins {
       if 'swift-repository' in $::elasticsearch_9200_plugins {
