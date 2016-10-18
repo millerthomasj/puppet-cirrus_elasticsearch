@@ -10,7 +10,7 @@ class cirrus_elasticsearch::xpack (
   Elasticsearch::Plugin { instances => [$es_name], }
   elasticsearch::plugin { 'elasticsearch/license/latest': }
   elasticsearch::plugin { 'elasticsearch/shield/latest': }
-#  elasticsearch::plugin { 'elasticsearch/marvel-agent/latest': }
+  elasticsearch::plugin { 'elasticsearch/marvel-agent/latest': }
 
   include ::cirrus_elasticsearch::xpack::users
   include ::cirrus_elasticsearch::xpack::roles
