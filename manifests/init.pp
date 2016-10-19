@@ -99,24 +99,33 @@ class cirrus_elasticsearch (
     $_auth_password = $shield_auth_password
 
     $_config = {
-      'node.master'                                           => $es_node_master,
-      'node.data'                                             => $es_node_data,
-      'shield.audit.enabled'                                  => true,
-      'shield.authc.anonymous.username'                       => 'anonymous',
-      'shield.authc.anonymous.roles'                          => [ 'admin', 'anonymous' ],
-      'shield.authc.realms.esusers.type'                      => 'esusers',
-      'shield.authc.realms.esusers.order'                     => '0',
-      'shield.authc.realms.twc_ldap.type'                     => 'ldap',
-      'shield.authc.realms.twc_ldap.order'                    => '1',
-      'shield.authc.realms.twc_ldap.url'                      => 'ldap://165.237.2.112:3268',
-      'shield.authc.realms.twc_ldap.bind_dn'                  => 'svc-openstack@@corp.twcable.com',
-      'shield.authc.realms.twc_ldap.bind_password'            => hiera('keystone::ldap::password'),
-      'shield.authc.realms.twc_ldap.user_dn_templates'        => [
+      'node.master'                                                                 => $es_node_master,
+      'node.data'                                                                   => $es_node_data,
+      'shield.audit.enabled'                                                        => true,
+      'shield.authc.anonymous.username'                                             => 'anonymous',
+      'shield.authc.anonymous.roles'                                                => [ 'admin', 'anonymous' ],
+      'shield.authc.realms.esusers.type'                                            => 'esusers',
+      'shield.authc.realms.esusers.order'                                           => '0',
+      'shield.authc.realms.twc_ldap.type'                                           => 'ldap',
+      'shield.authc.realms.twc_ldap.order'                                          => '1',
+      'shield.authc.realms.twc_ldap.url'                                            => 'ldap://165.237.2.112:3268',
+      'shield.authc.realms.twc_ldap.bind_dn'                                        => 'svc-openstack@@corp.twcable.com',
+      'shield.authc.realms.twc_ldap.bind_password'                                  => hiera('keystone::ldap::password'),
+      'shield.authc.realms.twc_ldap.user_dn_templates'                              => [
         'cn={0},OU=Users,OU=Mystro,OU=TWC Divisions,DC=corp,DC=twcable,DC=com',
         'cn={0},OU=Vendors,OU=Mystro,OU=TWC Divisions,DC=corp,DC=twcable,DC=com',
       ],
-      'shield.authc.realms.twc_ldap.unmapped_groups_as_roles' => true,
-      'shield.authc.realms.twc_ldap.hostname_verification'    => false,
+      'shield.authc.realms.twc_ldap.unmapped_groups_as_roles'                       => true,
+      'shield.authc.realms.twc_ldap.hostname_verification'                          => false,
+      'watcher.actions.hipchat.service.default_account'                             => 'hipchat-elk',
+      'watcher.actions.hipchat.service.account.hipchat-elk.profile'                 => 'integration',
+      'watcher.actions.hipchat.service.account.hipchat-elk.host'                    => 'hipchat.os.cloud.twc.net',
+      'watcher.actions.hipchat.service.account.hipchat-elk.port'                    => '443',
+      'watcher.actions.hipchat.service.account.hipchat-elk.auth_token'              => hiera('elk_hipchat_token'),
+      'watcher.actions.hipchat.service.account.hipchat-elk.room'                    => '39',
+      'watcher.actions.hipchat.service.account.hipchat-elk.message_defaults.color'  => 'gray',
+      'watcher.actions.hipchat.service.account.hipchat-elk.message_defaults.format' => 'text',
+      'watcher.actions.hipchat.service.account.hipchat-elk.message_defaults.notify' => false,
     }
   } else {
     $_auth_username = undef

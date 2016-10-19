@@ -162,4 +162,24 @@ class cirrus_elasticsearch::xpack::roles (
       },
     }
   }
+  elasticsearch::shield::role { 'watcher_admin':
+    mappings   => [
+      # Tom Miller
+      'CN=V636426,OU=Vendors,OU=Mystro,OU=TWC Divisions,DC=corp,DC=twcable,DC=com',
+      # Nathan Randall
+      'CN=V606454,OU=Vendors,OU=Mystro,OU=TWC Divisions,DC=corp,DC=twcable,DC=com',
+      # Jason Rouault
+      'CN=E203392,OU=Users,OU=Mystro,OU=TWC Divisions,DC=corp,DC=twcable,DC=com',
+      # Steven Travis
+      'CN=E219772,OU=Users,OU=Mystro,OU=TWC Divisions,DC=corp,DC=twcable,DC=com',
+      # Patrick Ocana
+      'CN=V605989,OU=Vendors,OU=Mystro,OU=TWC Divisions,DC=corp,DC=twcable,DC=com',
+    ],
+    privileges => {
+      'cluster' => [
+        'monitor',
+        'manage'
+      ],
+    }
+  }
 }
