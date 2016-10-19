@@ -10,7 +10,9 @@ class cirrus_elasticsearch::xpack (
   Elasticsearch::Plugin { instances => [$es_name], }
   elasticsearch::plugin { 'elasticsearch/license/latest': }
   elasticsearch::plugin { 'elasticsearch/shield/latest': }
-  elasticsearch::plugin { 'elasticsearch/marvel-agent/latest': }
+  elasticsearch::plugin { 'marvel-agent':
+    url => 'https://download.elastic.co/elasticsearch/release/org/elasticsearch/plugin/marvel-agent/2.3.3/marvel-agent-2.3.3.zip',
+  }
 
   include ::cirrus_elasticsearch::xpack::users
   include ::cirrus_elasticsearch::xpack::roles
