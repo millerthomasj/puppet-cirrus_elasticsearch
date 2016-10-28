@@ -14,6 +14,9 @@ class cirrus_elasticsearch::xpack (
     url => 'https://download.elastic.co/elasticsearch/release/org/elasticsearch/plugin/marvel-agent/2.3.3/marvel-agent-2.3.3.zip',
   }
   elasticsearch::plugin { 'elasticsearch/watcher/latest': }
+  elasticsearch::plugin { 'graph':
+    url => 'https://download.elastic.co/elasticsearch/release/org/elasticsearch/plugin/graph/2.3.3/graph-2.3.3.zip',
+  }
 
   include ::cirrus_elasticsearch::xpack::users
   include ::cirrus_elasticsearch::xpack::roles
