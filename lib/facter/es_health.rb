@@ -60,9 +60,9 @@ module EsHealth
             json_data_masternode = JSON.parse(response4.body)
 
             if json_data_localnode['nodes'].first[0] == json_data_masternode['master_node']
-              add_fact(key_prefix, 'master_node', 'true')
+              add_fact(key_prefix, 'master_node', true)
             else
-              add_fact(key_prefix, 'master_node', 'false')
+              add_fact(key_prefix, 'master_node', false)
             end
           end
         end
