@@ -136,13 +136,22 @@ class cirrus_elasticsearch (
     }
   }
 
-  class { '::elasticsearch':
-    ensure                  => 'present',
-    manage_repo             => $es_manage_repo,
-    java_install            => true,
-    api_basic_auth_username => $_auth_username,
-    api_basic_auth_password => $_auth_password,
-    config                  => {
+  if $::cirrus_role == 'elk' {
+    $_primary_config = {
+      'cluster.name'                       => $es_clustername,
+      'discovery.zen.minimum_master_nodes' => $es_zen_minimum_master_nodes,
+      'discovery.zen.multicast.enabled'    => $es_zen_multicast_enabled,
+      'discovery.zen.ping.unicast.hosts'   => [ 'localhost' ],
+      'gateway.recover_after_nodes'        => $es_recover_after_nodes,
+      'index.number_of_replicas'           => $es_number_of_replicas,
+      'index.number_of_shards'             => $es_number_of_shards,
+      'network.host'                       => '0.0.0.0',
+      'node.max_local_storage_nodes'       => $es_max_local_storage_nodes,
+      'action.destructive_requires_name'   => $es_destructive_requires_name,
+      'bootstrap.mlockall'                 => $es_mlockall,
+    }
+  } else {
+    $_primary_config = {
       'cluster.name'                       => $es_clustername,
       'discovery.zen.minimum_master_nodes' => $es_zen_minimum_master_nodes,
       'discovery.zen.multicast.enabled'    => $es_zen_multicast_enabled,
@@ -154,7 +163,16 @@ class cirrus_elasticsearch (
       'node.max_local_storage_nodes'       => $es_max_local_storage_nodes,
       'action.destructive_requires_name'   => $es_destructive_requires_name,
       'bootstrap.mlockall'                 => $es_mlockall,
-    },
+    }
+  }
+
+  class { '::elasticsearch':
+    ensure                  => 'present',
+    manage_repo             => $es_manage_repo,
+    java_install            => true,
+    api_basic_auth_username => $_auth_username,
+    api_basic_auth_password => $_auth_password,
+    config                  => $_primary_config,
   }
 
   if $es_node_data {
