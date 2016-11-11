@@ -14,12 +14,18 @@ class cirrus_elasticsearch::config (
 
   $num_shards = query_nodes('cirrus_role=es and cirrus_app_instance=data').count()
 
+  if $num_shards == 0 {
+    $_num_shards = query_nodes('cirrus_role=elk').count()
+  } else {
+    $_num_shards = $num_shards
+  }
+
   elasticsearch::template { 'set_index_shards':
     content => {
       'template' => '*',
       'order'    => 1,
       'settings' => {
-        'number_of_shards' => $num_shards,
+        'number_of_shards' => $_num_shards,
       }
     },
     require => Es_Instance_Conn_Validator[$es_name],
