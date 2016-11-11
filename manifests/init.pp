@@ -4,53 +4,53 @@
 #
 # === Variables
 #
-# [* cirrus_elaticsearch::es_manage_repo *]
+# [* cirrus_elasticsearch::es_manage_repo *]
 #   We use blobmaster to manage repostories this will always be false.
 #
-# [* cirrus_elaticsearch::es_recover_after_nodes *]
+# [* cirrus_elasticsearch::es_recover_after_nodes *]
 #   Ensure the cluster recovers once this number of nodes join.
 #
-# [* cirrus_elaticsearch::es_zen_minimum_master_nodes *]
+# [* cirrus_elasticsearch::es_zen_minimum_master_nodes *]
 #   Ensure at least this number masters exist before cluster goes green.
 #
-# [* cirrus_elaticsearch::es_zen_multicast_enabled *]
+# [* cirrus_elasticsearch::es_zen_multicast_enabled *]
 #   This should always be disabled as multicast should not be relied on for a production
 #   system.
 #
-# [* cirrus_elaticsearch::es_number_of_replicas *]
+# [* cirrus_elasticsearch::es_number_of_replicas *]
 #   How many replicas should the cluster maintain.
 #
-# [* cirrus_elaticsearch::es_number_of_shards *]
+# [* cirrus_elasticsearch::es_number_of_shards *]
 #   How many shards should be created per index by default.
 #
-# [* cirrus_elaticsearch::es_max_local_storage_nodes *]
+# [* cirrus_elasticsearch::es_max_local_storage_nodes *]
 #   How many storage nodes do we allow per data node.
 #
-# [* cirrus_elaticsearch::es_mlockall *]
+# [* cirrus_elasticsearch::es_mlockall *]
 #   Prevent elasticsearch from using swap space.
 #
-# [* cirrus_elaticsearch::es_destructive_requires_name *]
+# [* cirrus_elasticsearch::es_destructive_requires_name *]
 #   Deleting of indices must be done by name rather than by regex.
 #
 # === Hiera variables
 #
-# [* cirrus_elaticsearch::es_name *]
+# [* cirrus_elasticsearch::es_name *]
 #   Name that will be appended to the hostname of the machine to identify the server in
 #   the cluster.
 #
-# [* cirrus_elaticsearch::es_master0 *]
-# [* cirrus_elaticsearch::es_master1 *]
-# [* cirrus_elaticsearch::es_master2 *]
+# [* cirrus_elasticsearch::es_master0 *]
+# [* cirrus_elasticsearch::es_master1 *]
+# [* cirrus_elasticsearch::es_master2 *]
 #   One of the primary masters for the elasticsearch cluster so we are able to shut off
 #   multicast.
 #
-# [* cirrus_elaticsearch::es_node_master *]
+# [* cirrus_elasticsearch::es_node_master *]
 #   Is this node a master node (true|false).
 #
-# [* cirrus_elaticsearch::es_node_data *]
+# [* cirrus_elasticsearch::es_node_data *]
 #   Is this node a data node (true|false).
 #
-# [* cirrus_elaticsearch::es_clustername *]
+# [* cirrus_elasticsearch::es_clustername *]
 #   Cluster name for the elasticsearch cluster.
 #
 
@@ -175,7 +175,7 @@ class cirrus_elasticsearch (
     config                  => $_primary_config,
   }
 
-  if $es_node_data {
+  if $es_node_data and $::blockdevices {
     $es_blockdevs = $::blockdevices.split(',').delete('sr0').delete('vda')
     $es_datadirs = $es_blockdevs.map |$index, $device| { "/usr/share/elasticsearch/data${index}" }
 
