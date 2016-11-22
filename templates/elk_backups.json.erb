@@ -1,7 +1,7 @@
 {
   "type": "swift",
   "settings": {
-    "swift_url": "<%= scope.lookupvar('::cirrus_elasticsearch::backup::es_swift_url') %>",
+    "swift_url": "<%= scope.lookupvar('::cirrus_elasticsearch::backup::es_swift_url') %>/v2.0/tokens",
     "swift_container": "<%= scope.lookupvar('::cirrus_elasticsearch::backup::es_swift_container') %>",
     "swift_authmethod": "<%= scope.lookupvar('::cirrus_elasticsearch::backup::es_swift_authmethod') %>",
     "swift_tenantname": "<%= scope.lookupvar('::cirrus_elasticsearch::backup::es_swift_tenantname') %>",

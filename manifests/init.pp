@@ -168,6 +168,7 @@ class cirrus_elasticsearch (
 
   class { '::elasticsearch':
     ensure                  => 'present',
+    autoupgrade             => true,
     manage_repo             => $es_manage_repo,
     java_install            => true,
     api_basic_auth_username => $_auth_username,
@@ -224,7 +225,7 @@ class cirrus_elasticsearch (
   }
 
   if $es_swift_backups {
-    elasticsearch::plugin { 'org.wikimedia.elasticsearch.swift/swift-repository-plugin/2.3.3.1':
+    elasticsearch::plugin { "org.wikimedia.elasticsearch.swift/swift-repository-plugin/${::elasticsearch_9200_version}":
       ensure     => 'present',
       instances  => $es_name,
       module_dir => 'swift-repository',
