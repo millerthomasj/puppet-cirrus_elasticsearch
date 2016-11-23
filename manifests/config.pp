@@ -10,8 +10,6 @@ class cirrus_elasticsearch::config (
   $es_node_master      = $::cirrus_elasticsearch::es_node_master,
 )
 {
-  es_instance_conn_validator { $es_name: }
-
   $num_shards = query_nodes('cirrus_role=es and cirrus_app_instance=data').count()
 
   if $num_shards == 0 {
@@ -20,15 +18,18 @@ class cirrus_elasticsearch::config (
     $_num_shards = $num_shards
   }
 
-  elasticsearch::template { 'set_index_shards':
-    content => {
-      'template' => '*',
-      'order'    => 1,
-      'settings' => {
-        'number_of_shards' => $_num_shards,
-      }
-    },
-    require => Es_Instance_Conn_Validator[$es_name],
+  if $::elasticsearch_9200_name {
+    es_instance_conn_validator { $es_name: }
+    elasticsearch::template { 'set_index_shards':
+      content => {
+        'template' => '*',
+        'order'    => 1,
+        'settings' => {
+          'number_of_shards' => $_num_shards,
+        }
+      },
+      require => Es_Instance_Conn_Validator[$es_name],
+    }
   }
 
   # Do the following only on es-master nodes for Elasticsearch index management

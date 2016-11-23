@@ -5,6 +5,7 @@
 
 class cirrus_elasticsearch::params
 {
+  $es_version = '2.4.1'
   $es_name = 'undef'
   $es_master0 = '10.10.0.100'
   $es_master1 = '10.10.0.101'

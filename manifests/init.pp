@@ -4,6 +4,9 @@
 #
 # === Variables
 #
+# [* cirrus_elasticsearch::es_version *]
+#   Set the proper elasticsearch version, so we can use it throughout the module.
+#
 # [* cirrus_elasticsearch::es_manage_repo *]
 #   We use blobmaster to manage repostories this will always be false.
 #
@@ -55,6 +58,7 @@
 #
 
 class cirrus_elasticsearch (
+  $es_version                     = $cirrus_elasticsearch::params::es_version,
   $es_name                        = $cirrus_elasticsearch::params::es_name,
   $es_master0                     = $cirrus_elasticsearch::params::es_master0,
   $es_master1                     = $cirrus_elasticsearch::params::es_master1,
@@ -168,7 +172,7 @@ class cirrus_elasticsearch (
 
   class { '::elasticsearch':
     ensure                  => 'present',
-    autoupgrade             => true,
+    version                 => $es_version,
     manage_repo             => $es_manage_repo,
     java_install            => true,
     api_basic_auth_username => $_auth_username,
@@ -225,7 +229,13 @@ class cirrus_elasticsearch (
   }
 
   if $es_swift_backups {
-    elasticsearch::plugin { "org.wikimedia.elasticsearch.swift/swift-repository-plugin/${::elasticsearch_9200_version}":
+    if $es_version == '2.3.3' {
+      $_plugin_version = '2.3.3.1'
+    } else {
+      $_plugin_version = $es_version
+    }
+
+    elasticsearch::plugin { "org.wikimedia.elasticsearch.swift/swift-repository-plugin/${_plugin_version}":
       ensure     => 'present',
       instances  => $es_name,
       module_dir => 'swift-repository',
