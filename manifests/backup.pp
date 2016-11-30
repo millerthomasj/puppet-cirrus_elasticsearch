@@ -3,7 +3,7 @@
 
 class cirrus_elasticsearch::backup (
   $es_swift_url          = hiera('keystone::endpoint::public_url'),
-  $es_swift_container    = 'elk_backups',
+  $es_swift_container    = "elk_backups-${::cirrus_site_iteration}",
   $es_swift_authmethod   = 'KEYSTONE',
   $es_swift_tenantname   = 'elastic-stack',
   $es_swift_username     = 'elk_backup',
